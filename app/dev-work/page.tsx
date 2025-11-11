@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { Github, MapPin, FolderGit2, Users } from "lucide-react";
 
 export default function DevWork() {
-	// Runtime profile data fetched from GitHub API and polled periodically
+	// Runtime profile data fetched from GitHub API
 	type Profile = {
 		name: string;
 		username: string;
@@ -35,33 +35,24 @@ export default function DevWork() {
 
 		const fetchProfile = async () => {
 			try {
-				const res = await fetch("https://api.github.com/users/chicco-carone");
-				if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+				const res = await fetch("/api/github-profile");
+				if (!res.ok) throw new Error(`API returned ${res.status}`);
 				const data = await res.json();
-				const mapped: Profile = {
-					name: data.name ?? data.login,
-					username: data.login,
-					avatar: data.avatar_url,
-					location: data.location ?? null,
-					publicRepos: data.public_repos ?? 0,
-					followers: data.followers ?? 0,
-				};
 				if (mounted) {
-					setProfile(mapped);
+					setProfile(data);
 					setError(null);
 				}
-			} catch (err: any) {
+			} catch (err: unknown) {
 				if (mounted) setError(String(err));
+				console.error("Error fetching profile:", err);
 			}
 		};
 
-		// Initial fetch and then poll every 60s
-		fetchProfile();
-		const interval = setInterval(fetchProfile, 60_000);
-		return () => {
-			mounted = false;
-			clearInterval(interval);
-		};
+	// Initial fetch
+	fetchProfile();
+	return () => {
+		mounted = false;
+	};
 	}, []);
 
 	return (
@@ -123,6 +114,11 @@ export default function DevWork() {
 							Recently, I’ve been working on media, automation, and remote-control projects, always focusing on
 							clean UX and maintainable code.
 						</p>
+						{error && (
+							<p className="mt-4 text-red-400 text-sm">
+								Error loading profile: {error}
+							</p>
+						)}
 					</Card>
 
 					{/* Two-column grid */}
@@ -135,4 +131,3 @@ export default function DevWork() {
 		</>
 	);
 }
-

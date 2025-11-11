@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { ExternalLink, Star, GitFork, Calendar, Code } from "lucide-react";
-
-interface Repository {
+type Repository = {
   id: number;
   name: string;
   full_name: string;
@@ -17,7 +16,7 @@ interface Repository {
   updated_at: string;
   topics?: string[];
   private?: boolean;
-}
+};
 
 interface GitHubProjectsProps {
   repos: string[]; // e.g. ["owner/name", "owner/name2"]
@@ -25,30 +24,25 @@ interface GitHubProjectsProps {
 
 export function GitHubProjects({ repos }: GitHubProjectsProps) {
   const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const fetchRepos = async () => {
       try {
-        const results = await Promise.all(
-          repos.map(async (fullName) => {
-            const res = await fetch(`https://api.github.com/repos/${fullName}`);
-            if (!res.ok) throw new Error(`Failed to fetch ${fullName}: ${res.status}`);
-            const data = await res.json();
-            return data as Repository;
-          })
-        );
+        const res = await fetch(`/api/github-repos?repos=${repos.join(',')}`);
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        const data = await res.json();
         if (!cancelled) {
-          // Exclude private repos just in case and keep original order
-          const publicRepos = results.filter((r) => !r.private);
-          setRepositories(publicRepos);
+          setRepositories(data);
+          setError(null);
         }
       } catch (e) {
         console.error("Error loading repositories:", e);
-        if (!cancelled) setRepositories([]);
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setRepositories([]);
+          setError(String(e));
+        }
       }
     };
     fetchRepos();
@@ -93,8 +87,11 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
         </div>
       </div>
 
-      <div className="space-y-4">
-        {repositories.map((repo, index) => (
+      {error ? (
+        <p className="text-red-400 text-sm">Error loading repositories: {error}</p>
+      ) : (
+        <div className="space-y-4">
+          {repositories.map((repo, index) => (
           <motion.div
             key={repo.id}
             initial={{ opacity: 0, x: -20 }}
@@ -160,7 +157,8 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }
