@@ -18,12 +18,11 @@ interface WakaTimeData {
   total_time: string;
 }
 
-type Range = "last_7_days" | "last_30_days" | "last_6_months" | "last_year";
+type Range = "last_7_days" | "last_30_days" | "last_year";
 
 const RANGE_OPTIONS = [
   { value: "last_7_days", label: "Last 7 days" },
   { value: "last_30_days", label: "Last 30 days" },
-  { value: "last_6_months", label: "Last 6 months" },
   { value: "last_year", label: "Last year" },
 ] as const;
 
@@ -39,8 +38,8 @@ export function WakaTimeStats() {
         setLoading(true);
         setError(null);
 
-        // Fetch from our secure API proxy with browser caching for better UX
-        const response = await fetch(`/api/wakatime?range=${range}`, {
+        // Fetch from our public API with browser caching for better UX
+        const response = await fetch(`/api/wakatime-public?range=${range}`, {
           method: "GET",
           headers: { Accept: "application/json" },
           cache: "default", // Allow browser caching for instant loading of previously fetched ranges
@@ -58,33 +57,10 @@ export function WakaTimeStats() {
             languages: result.languages,
             total_time: result.total_time || "Total coding time",
           });
-        } else {
-          // Fallback to mock data
-          setData({
-            languages: [
-              { name: "TypeScript", percent: 35, text: "TypeScript", total: "45h 32m" },
-              { name: "Python", percent: 28, text: "Python", total: "36h 15m" },
-              { name: "Shell", percent: 18, text: "Shell", total: "23h 45m" },
-              { name: "JavaScript", percent: 12, text: "JavaScript", total: "15h 30m" },
-              { name: "HTML", percent: 7, text: "HTML", total: "9h 12m" },
-            ],
-            total_time: "Total time tracked",
-          });
         }
       } catch (err) {
         console.error("Error fetching WakaTime data:", err);
         setError("Failed to load WakaTime data");
-        // Fallback sample data
-        setData({
-          languages: [
-            { name: "TypeScript", percent: 35, text: "TypeScript", total: "35%" },
-            { name: "Python", percent: 28, text: "Python", total: "28%" },
-            { name: "Shell", percent: 18, text: "Shell", total: "18%" },
-            { name: "JavaScript", percent: 12, text: "JavaScript", total: "12%" },
-            { name: "HTML", percent: 7, text: "HTML", total: "7%" },
-          ],
-          total_time: "Total time tracked",
-        });
       } finally {
         setLoading(false);
       }
@@ -144,15 +120,17 @@ export function WakaTimeStats() {
 
   const getLanguageColor = (name: string) => {
     const colors: Record<string, string> = {
-      TypeScript: "bg-blue-500",
+      Typescript: "bg-blue-500",
       Python: "bg-yellow-500",
       Shell: "bg-green-500",
-      JavaScript: "bg-yellow-400",
-      HTML: "bg-orange-500",
+      Javascript: "bg-yellow-400",
+      Html: "bg-orange-500",
       CSS: "bg-blue-400",
       Java: "bg-red-500",
       C: "bg-gray-500",
       "C++": "bg-blue-600",
+      Markdown: "bg-purple-500",
+      "Jupiter notebook": "bg-orange-500",
     };
     return colors[name] || "bg-gray-500";
   };
