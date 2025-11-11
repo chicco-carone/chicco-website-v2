@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ExternalLink, Star, GitFork, Calendar, Code } from "lucide-react";
+import { ExternalLink, Star, GitFork, Calendar, Code, GitCommit } from "lucide-react";
 type Repository = {
   id: number;
   name: string;
@@ -16,6 +16,7 @@ type Repository = {
   updated_at: string;
   topics?: string[];
   private?: boolean;
+  recentCommitsCount: number | null;
 };
 
 interface GitHubProjectsProps {
@@ -111,15 +112,19 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
                     </h4>
                     <div className="flex items-center gap-4 text-xs text-gray-400">
                       <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3" />
+                        <span title="Stars"><Star className="h-3 w-3" /></span>
                         <span>{repo.stargazers_count}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <GitFork className="h-3 w-3" />
+                        <span title="Forks"><GitFork className="h-3 w-3" /></span>
                         <span>{repo.forks_count}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
+                        <span title="Commits (last 30 days)"><GitCommit className="h-3 w-3" /></span>
+                        <span>{repo.recentCommitsCount ?? "—"}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span title="Last updated"><Calendar className="h-3 w-3" /></span>
                         <span>{formatDate(repo.updated_at)}</span>
                       </div>
                     </div>

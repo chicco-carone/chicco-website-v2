@@ -16,7 +16,36 @@ const GitHubRepoSchema = z.object({
   updated_at: z.string(),
   topics: z.array(z.string()).optional(),
   private: z.boolean().optional(),
+  recentCommitsCount: z.number().nullable(),
 });
+
+// Helper function to fetch recent commits count
+const fetchRecentCommitsCount = async (fullName: string): Promise<number | null> => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const since = thirtyDaysAgo.toISOString();
+
+    const commitsUrl = `https://api.github.com/repos/${fullName}/commits?since=${since}&per_page=100`;
+    const response = await fetch(commitsUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Website/1.0)',
+      },
+    });
+
+    if (!response.ok) {
+      // If commits API fails, return null instead of failing the whole request
+      return null;
+    }
+
+    const commits = await response.json();
+    return Array.isArray(commits) ? commits.length : 0;
+  } catch (error) {
+    // Silently fail for commits, don't break repo fetching
+    console.warn(`Failed to fetch commits for ${fullName}:`, error);
+    return null;
+  }
+};
 
 // Cached function to fetch GitHub repositories
 const fetchGitHubRepos = unstable_cache(
@@ -35,7 +64,14 @@ const fetchGitHubRepos = unstable_cache(
         }
 
         const result = await response.json();
-        return GitHubRepoSchema.parse(result);
+
+        // Fetch recent commits count
+        const recentCommitsCount = await fetchRecentCommitsCount(fullName);
+
+        return GitHubRepoSchema.parse({
+          ...result,
+          recentCommitsCount,
+        });
       })
     );
 
