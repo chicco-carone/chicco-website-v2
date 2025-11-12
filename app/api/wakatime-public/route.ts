@@ -34,7 +34,7 @@ const WakapiResponseSchema = z.object({
 type WakapiLanguage = z.infer<typeof WakapiLanguageSchema>;
 
 // Cached function to fetch Wakapi data
-const fetchWakapiData = unstable_cache(
+export const fetchWakapiData = unstable_cache(
   async (username: string, range: Range) => {
     const wakapiUrl = `https://wakapi.chiccolab.me/api/v1/users/${username}/stats/${range}`;
     const response = await fetch(wakapiUrl, {

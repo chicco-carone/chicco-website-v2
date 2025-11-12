@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Navbar } from "@/components/main/navbar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,23 +5,52 @@ import { WakaTimeStats } from "@/components/wakatime-stats";
 import { GitHubProjects } from "@/components/github-projects";
 import { OpenSourceContributions } from "@/components/open-source-contributions";
 import { UserImage } from "@/components/user-image";
-import { motion } from "framer-motion";
 import { Github, MapPin, FolderGit2, Users } from "lucide-react";
+import { unstable_cache } from "next/cache";
 
-export default function DevWork() {
-	// Runtime profile data fetched from GitHub API
-	type Profile = {
-		name: string;
-		username: string;
-		avatar: string;
-		location?: string | null;
-		publicRepos: number;
-		followers: number;
-	};
+// Runtime profile data fetched from GitHub API
+type Profile = {
+	name: string;
+	username: string;
+	avatar: string;
+	location?: string | null;
+	publicRepos: number;
+	followers: number;
+};
 
-	const [profile, setProfile] = useState<Profile | null>(null);
-	const [error, setError] = useState<string | null>(null);
+// Cached function to fetch GitHub profile on server
+const fetchGitHubProfile = unstable_cache(
+	async (): Promise<Profile> => {
+		const githubUrl = `https://api.github.com/users/chicco-carone`;
+		const response = await fetch(githubUrl, {
+			headers: {
+				'User-Agent': 'Mozilla/5.0 (compatible; Website/1.0)',
+			},
+		});
 
+		if (!response.ok) {
+			throw new Error(`GitHub API error: ${response.status}`);
+		}
+
+		const result = await response.json();
+
+		// Transform to match client expectations
+		return {
+			name: result.name ?? result.login,
+			username: result.login,
+			avatar: result.avatar_url,
+			location: result.location ?? null,
+			publicRepos: result.public_repos ?? 0,
+			followers: result.followers ?? 0,
+		};
+	},
+	["github-profile-server"],
+	{
+		revalidate: 1800, // Revalidate every 30 minutes
+	}
+);
+
+export default async function DevWork() {
 	// Choose which repositories to feature (public repos only)
 	const featuredRepos = [
 		"chicco-carone/Power-Load-Balancer",
@@ -39,30 +65,16 @@ export default function DevWork() {
 		"badaix/snapcast",
 	];
 
-	useEffect(() => {
-		let mounted = true;
+	// Fetch profile data on server
+	let profile: Profile | null = null;
+	let error: string | null = null;
 
-		const fetchProfile = async () => {
-			try {
-				const res = await fetch("/api/github-profile");
-				if (!res.ok) throw new Error(`API returned ${res.status}`);
-				const data = await res.json();
-				if (mounted) {
-					setProfile(data);
-					setError(null);
-				}
-			} catch (err: unknown) {
-				if (mounted) setError(String(err));
-				console.error("Error fetching profile:", err);
-			}
-		};
-
-	// Initial fetch
-	fetchProfile();
-	return () => {
-		mounted = false;
-	};
-	}, []);
+	try {
+		profile = await fetchGitHubProfile();
+	} catch (err) {
+		error = String(err);
+		console.error("Error fetching profile:", err);
+	}
 
 	return (
 		<>
@@ -84,9 +96,9 @@ export default function DevWork() {
 					<Card className="p-6 md:p-7 bg-black/20 border-white/10 mb-8">
 						<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
 							<div className="flex items-center gap-3 md:gap-4">
-								<motion.div className="p-2 rounded-lg bg-white/10" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+								<div className="p-2 rounded-lg bg-white/10">
 									<Github className="h-5 w-5 text-white" />
-								</motion.div>
+								</div>
 								<div>
 									<p className="text-sm text-gray-400">Hi, I’m</p>
 									<h2 className="text-lg md:text-xl font-semibold">{profile?.name ?? "Francesco"}</h2>

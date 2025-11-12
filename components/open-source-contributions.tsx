@@ -1,11 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
 import { ExternalLink, Star, GitFork, Calendar, Code, GitCommit } from "lucide-react";
+import { unstable_cache } from "next/cache";
+import { AnimatedCard } from "./animated-card";
+
 type Repository = {
   id: number;
   name: string;
@@ -25,34 +25,76 @@ interface OpenSourceContributionsProps {
   repos: string[]; // e.g. ["owner/name", "owner/name2"]
 }
 
-export function OpenSourceContributions({ repos }: OpenSourceContributionsProps) {
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [error, setError] = useState<string | null>(null);
+// Helper function to fetch recent commits count
+const fetchRecentCommitsCount = async (fullName: string): Promise<number | null> => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const since = thirtyDaysAgo.toISOString();
 
-  useEffect(() => {
-    let cancelled = false;
-    const fetchRepos = async () => {
-      try {
-        const res = await fetch(`/api/github-repos?repos=${repos.join(',')}`);
-        if (!res.ok) throw new Error(`API returned ${res.status}`);
-        const data = await res.json();
-        if (!cancelled) {
-          setRepositories(data);
-          setError(null);
+    const commitsUrl = `https://api.github.com/repos/${fullName}/commits?since=${since}&per_page=100`;
+    const response = await fetch(commitsUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Website/1.0)',
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const commits = await response.json();
+    return Array.isArray(commits) ? commits.length : 0;
+  } catch (error) {
+    return null;
+  }
+};
+
+// Cached function to fetch GitHub repositories
+const fetchGitHubRepos = unstable_cache(
+  async (repos: string[]) => {
+    const results = await Promise.all(
+      repos.map(async (fullName) => {
+        const githubUrl = `https://api.github.com/repos/${fullName}`;
+        const response = await fetch(githubUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; Website/1.0)',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${fullName}: ${response.status}`);
         }
-      } catch (e) {
-        console.error("Error loading repositories:", e);
-        if (!cancelled) {
-          setRepositories([]);
-          setError(String(e));
-        }
-      }
-    };
-    fetchRepos();
-    return () => {
-      cancelled = true;
-    };
-  }, [repos]);
+
+        const result = await response.json();
+        const recentCommitsCount = await fetchRecentCommitsCount(fullName);
+
+        return {
+          ...result,
+          recentCommitsCount,
+        };
+      })
+    );
+
+    return results.filter((r) => !r.private);
+  },
+  ['open-source-contributions-server'],
+  {
+    revalidate: 1800, // Revalidate every 30 minutes
+  }
+);
+
+export async function OpenSourceContributions({ repos }: OpenSourceContributionsProps) {
+  let repositories: Repository[] = [];
+  let error: string | null = null;
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+
+  try {
+    repositories = await fetchGitHubRepos(repos);
+  } catch (e) {
+    error = String(e);
+    console.error("Error loading repositories:", e);
+  }
 
   const getLanguageColor = (language: string | null) => {
     const colors: Record<string, string> = {
@@ -95,13 +137,7 @@ export function OpenSourceContributions({ repos }: OpenSourceContributionsProps)
       ) : (
         <div className="space-y-4">
           {repositories.map((repo, index) => (
-          <motion.div
-            key={repo.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="group"
-          >
+          <AnimatedCard key={repo.id} index={index} className="group">
             <Card className="p-4 bg-black/40 border-white/5 hover:border-white/20 transition-all duration-300">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -148,19 +184,18 @@ export function OpenSourceContributions({ repos }: OpenSourceContributionsProps)
                 </div>
 
                 <Button asChild variant="outline" size="icon" className="ml-4">
-                  <motion.a
+                  <a
                     href={repo.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center justify-center"
                   >
                     <ExternalLink className="h-4 w-4" />
-                  </motion.a>
+                  </a>
                 </Button>
               </div>
             </Card>
-          </motion.div>
+          </AnimatedCard>
         ))}
         </div>
       )}
