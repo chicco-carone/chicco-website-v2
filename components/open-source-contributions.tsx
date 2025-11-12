@@ -21,11 +21,11 @@ type Repository = {
   recentCommitsCount: number | null;
 };
 
-interface GitHubProjectsProps {
+interface OpenSourceContributionsProps {
   repos: string[]; // e.g. ["owner/name", "owner/name2"]
 }
 
-export function GitHubProjects({ repos }: GitHubProjectsProps) {
+export function OpenSourceContributions({ repos }: OpenSourceContributionsProps) {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,13 +80,13 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
 
   return (
     <Card className="p-6 bg-black/20 border-white/10">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-purple-500/20">
-          <Code className="h-5 w-5 text-purple-400" />
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-2 rounded-lg bg-green-500/20">
+          <Code className="h-5 w-5 text-green-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-white">Featured Projects</h3>
-          <p className="text-sm text-gray-400">GitHub Repositories</p>
+          <h3 className="text-lg font-semibold text-white">Open Source Contributions</h3>
+          <p className="text-sm text-gray-400">Projects I&apos;ve contributed to</p>
         </div>
       </div>
 
@@ -131,11 +131,11 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
                       </div>
                     </div>
                   </div>
-                  
+
                   <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                     {repo.description}
                   </p>
-                  
+
                   {repo.topics && (
                     <div className="flex flex-wrap gap-2">
                       {repo.topics.slice(0, 4).map((topic) => (
@@ -146,7 +146,7 @@ export function GitHubProjects({ repos }: GitHubProjectsProps) {
                     </div>
                   )}
                 </div>
-                
+
                 <Button asChild variant="outline" size="icon" className="ml-4">
                   <motion.a
                     href={repo.html_url}

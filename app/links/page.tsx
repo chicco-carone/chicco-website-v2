@@ -1,16 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { Navbar } from "@/components/main/navbar";
-import { Github, Linkedin, Instagram, Globe } from "lucide-react"; // Assuming Lucide React for icons
+import { Linktree } from "@/components/linktree";
+import { FaGithub, FaReddit, FaTelegram, FaSteam } from "react-icons/fa"; // Using react-icons
 
-export default function Linktree() {
+export default function LinksPage() {
     const links = [
-        { name: "GitHub", href: "https://github.com/tuonome", icon: Github },
-        { name: "LinkedIn", href: "https://linkedin.com/in/tuonome", icon: Linkedin },
-        { name: "Instagram", href: "https://instagram.com/tuonome", icon: Instagram },
-        { name: "Portfolio", href: "https://tuosito.it", icon: Globe },
+        { name: "GitHub", href: "https://github.com/chicco-carone", icon: FaGithub },
+        { name: "Reddit", href: "https://www.reddit.com/user/Chiccocarone", icon: FaReddit },
+        { name: "Telegram", href: "https://t.me/Chicco2008", icon: FaTelegram },
+        { name: "Steam", href: "https://steamcommunity.com/id/Chicco8/", icon: FaSteam },
+        { name: "Osu", href: "https://osu.ppy.sh/users/26161155", icon: "/osu.svg" },
     ];
 
     return (
@@ -36,44 +37,7 @@ export default function Linktree() {
                 </motion.h1>
 
                 {/* Link List */}
-                <motion.ul
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                        hidden: {},
-                        visible: {
-                            transition: { staggerChildren: 0.15 },
-                        },
-                    }}
-                    className="flex flex-col items-center gap-4"
-                >
-                    {links.map((link, index) => (
-                        <motion.li
-                            key={index}
-                            variants={{
-                                hidden: { opacity: 0, y: 20 },
-                                visible: { opacity: 1, y: 0 },
-                            }}
-                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            <Link
-                                href={link.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group relative text-lg tracking-wide px-6 py-2 border border-neutral-700 rounded-full transition-all duration-300 hover:border-white flex items-center gap-2"
-                            >
-                                {link.icon && <link.icon className="w-5 h-5 group-hover:text-white text-neutral-300" />}
-                                <span className="relative z-10 group-hover:text-white text-neutral-300">
-                                    {link.name}
-                                </span>
-                                <motion.span
-                                    className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                    layoutId="hover-bg"
-                                />
-                            </Link>
-                        </motion.li>
-                    ))}
-                </motion.ul>
+                <Linktree links={links} />
             </main>
         </>
     );

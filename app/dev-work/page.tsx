@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Navbar } from "@/components/main/navbar";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { WakaTimeStats } from "@/components/wakatime-stats";
 import { GitHubProjects } from "@/components/github-projects";
+import { OpenSourceContributions } from "@/components/open-source-contributions";
 import { UserImage } from "@/components/user-image";
 import { motion } from "framer-motion";
 import { Github, MapPin, FolderGit2, Users } from "lucide-react";
@@ -28,6 +30,13 @@ export default function DevWork() {
 		"chicco-carone/Power-Load-Balancer",
 		"chicco-carone/Snapcast-Gui",
 		"chicco-carone/remove-all-comments",
+	];
+
+	// Choose which open source projects you've contributed to
+	const contributionRepos = [
+		"music-assistant/server",
+		"badaix/snapweb",
+		"badaix/snapcast",
 	];
 
 	useEffect(() => {
@@ -99,12 +108,12 @@ export default function DevWork() {
 								<div className="flex items-center gap-2 text-sm">
 									<FolderGit2 className="h-4 w-4 text-gray-300" />
 									<span className="text-gray-400">Public repos</span>
-									<span className="px-2 py-0.5 rounded bg-white/10 text-white font-medium">{profile?.publicRepos ?? 25}</span>
+									<Badge variant="secondary">{profile?.publicRepos ?? 25}</Badge>
 								</div>
 								<div className="flex items-center gap-2 text-sm">
 									<Users className="h-4 w-4 text-gray-300" />
 									<span className="text-gray-400">Followers</span>
-									<span className="px-2 py-0.5 rounded bg-white/10 text-white font-medium">{profile?.followers ?? 7}</span>
+									<Badge variant="secondary">{profile?.followers ?? 7}</Badge>
 								</div>
 							</div>
 						</div>
@@ -125,6 +134,11 @@ export default function DevWork() {
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						<WakaTimeStats />
 						<GitHubProjects repos={featuredRepos} />
+					</div>
+
+					{/* Open Source Contributions */}
+					<div className="mt-8">
+						<OpenSourceContributions repos={contributionRepos} />
 					</div>
 				</section>
 			</main>

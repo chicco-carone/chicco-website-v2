@@ -6,7 +6,6 @@ import { Navbar } from "@/components/main/navbar";
 import { UserImage } from "@/components/user-image";
 
 export default function Home() {
-  const [pressedKeys, setPressedKeys] = useState(new Set<string>());
   const [spin, setSpin] = useState(false);
   const lastKeyRef = useRef<string | null>(null);
   const lastPressTimeRef = useRef<number>(0);
@@ -35,23 +34,12 @@ export default function Home() {
 
       lastKeyRef.current = key;
       lastPressTimeRef.current = now;
-      setPressedKeys((prev) => new Set(prev).add(key));
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setPressedKeys((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(event.key.toLowerCase());
-        return newSet;
-      });
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
       if (spinTimeoutRef.current) clearTimeout(spinTimeoutRef.current);
     };
   }, []);

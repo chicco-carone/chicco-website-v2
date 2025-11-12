@@ -9,7 +9,6 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -17,9 +16,6 @@ import {
   Home,
   Info,
   Link as LinkIcon,
-  List,
-  Sparkles,
-  HelpCircle,
   BadgeCheck,
 } from "lucide-react";
 
