@@ -4,12 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/main/navbar";
 import { UserImage } from "@/components/user-image";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Home() {
   const [spin, setSpin] = useState(false);
+  const isMobile = useIsMobile();
   const lastKeyRef = useRef<string | null>(null);
   const lastPressTimeRef = useRef<number>(0);
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastTapRef = useRef<string | null>(null);
+  const touchCountRef = useRef<number>(0);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -36,13 +40,48 @@ export default function Home() {
       lastPressTimeRef.current = now;
     };
 
+    const handleTap = () => {
+      const now = Date.now();
+      const timeSinceLast = now - lastPressTimeRef.current;
+      const currentTap = lastTapRef.current === "tap1" ? "tap2" : "tap1";
+
+      touchCountRef.current += 1;
+
+      if (
+        lastTapRef.current &&
+        lastTapRef.current !== currentTap &&
+        timeSinceLast <= 150 &&
+        touchCountRef.current >= 4
+      ) {
+        setSpin(true);
+        if (spinTimeoutRef.current) clearTimeout(spinTimeoutRef.current);
+        spinTimeoutRef.current = setTimeout(() => setSpin(false), 150);
+      } else if (!lastTapRef.current || timeSinceLast > 150) {
+        setSpin(false);
+        if (spinTimeoutRef.current) clearTimeout(spinTimeoutRef.current);
+        touchCountRef.current = 0;
+      }
+
+      lastTapRef.current = currentTap;
+      lastPressTimeRef.current = now;
+    };
+
     window.addEventListener("keydown", handleKeyDown);
+
+    if (isMobile) {
+      window.addEventListener("touchstart", handleTap);
+      window.addEventListener("click", handleTap);
+    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      if (isMobile) {
+        window.removeEventListener("touchstart", handleTap);
+        window.removeEventListener("click", handleTap);
+      }
       if (spinTimeoutRef.current) clearTimeout(spinTimeoutRef.current);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <>
@@ -55,10 +94,10 @@ export default function Home() {
           transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mb-2"
         >
-          <motion.div
-            animate={spin ? { rotate: 360 } : { rotate: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          >
+            <motion.div
+              animate={spin ? { rotate: 360 } : { rotate: 0 }}
+              transition={{ duration: 0.5, ease: "linear" }}
+            >
             <UserImage
               src="/profile-image.jpg"
               alt="Profile Image"
