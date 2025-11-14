@@ -65,7 +65,8 @@ export function Navbar() {
                         onClick={() => router.push(href)}
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          "group inline-flex items-center gap-2 rounded-lg min-h-[2.5rem] p-[10px]",
+                          "group inline-flex items-center rounded-lg min-h-[2.5rem] p-[10px]",
+                          isMobile ? "gap-0" : "gap-2",
                           "px-4 py-2.5 md:px-5 md:py-3 text-sm font-medium",
                           "transition-[background,color,box-shadow] duration-200",
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
@@ -77,6 +78,7 @@ export function Navbar() {
                         <Icon
                           className={cn(
                             "h-4 w-4 shrink-0 transition-colors",
+                            "hidden md:block",
                             active
                               ? "text-primary-foreground"
                               : "text-muted-foreground"
