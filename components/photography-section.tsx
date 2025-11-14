@@ -94,7 +94,9 @@ export function PhotographySection() {
           >
             <h2 className="text-3xl font-bold mb-4">Photography</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            During my travels, I really enjoy capturing moment with my digital camera.
+             Usually I&apos;m interested in landscape photography and especially now trying more advanced methods like long exposure shots and filters.
+             Check out some of my favourite shots below!
             </p>
           </motion.div>
           <div className="flex justify-center items-center min-h-[400px]">
@@ -128,10 +130,21 @@ export function PhotographySection() {
             className="space-y-6"
           >
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              During my travels, I really enjoy capturing moment with my digital
+              camera.
             </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Usually I&apos;m interested in landscape photography and
+              especially now trying more advanced methods like long exposure
+              shots and filters.
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              I use as my main camera a Canon EOS 750D with a variety of lenses,
+              including a Canon EF-S18-135mm f/3.5-5.6 IS, a Canon EF 75-300mm
+              f/3.5-5.6 and a Canon EF 12 
+            </p>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Check out some of my favourite shots below!
             </p>
           </motion.div>
 
@@ -154,8 +167,8 @@ export function PhotographySection() {
                     className="absolute inset-0"
                   >
                     <Image
-                      src={currentImage?.src || ''}
-                      alt={currentImage?.alt || ''}
+                      src={currentImage?.src || ""}
+                      alt={currentImage?.alt || ""}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
@@ -180,46 +193,68 @@ export function PhotographySection() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
-                        <DialogTitle className="sr-only">Image Metadata</DialogTitle>
+                        <DialogTitle className="sr-only">
+                          Image Metadata
+                        </DialogTitle>
                         <div className="space-y-4">
-                          <h3 className="text-lg font-semibold">Image Details</h3>
+                          <h3 className="text-lg font-semibold">
+                            Image Details
+                          </h3>
                           {currentImage?.metadata ? (
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <span className="font-medium text-muted-foreground">Camera:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Camera:
+                                </span>
                                 <p>{currentImage.metadata.camera}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Lens:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Lens:
+                                </span>
                                 <p>{currentImage.metadata.lens}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Aperture:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Aperture:
+                                </span>
                                 <p>{currentImage.metadata.aperture}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Shutter Speed:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Shutter Speed:
+                                </span>
                                 <p>{currentImage.metadata.shutterSpeed}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">ISO:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  ISO:
+                                </span>
                                 <p>{currentImage.metadata.iso}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Focal Length:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Focal Length:
+                                </span>
                                 <p>{currentImage.metadata.focalLength}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Date:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Date:
+                                </span>
                                 <p>{currentImage.metadata.dateTaken}</p>
                               </div>
                               <div>
-                                <span className="font-medium text-muted-foreground">Location:</span>
+                                <span className="font-medium text-muted-foreground">
+                                  Location:
+                                </span>
                                 <p>{currentImage.metadata.location}</p>
                               </div>
                             </div>
                           ) : (
-                            <p className="text-muted-foreground">No metadata available for this image.</p>
+                            <p className="text-muted-foreground">
+                              No metadata available for this image.
+                            </p>
                           )}
                         </div>
                       </DialogContent>
@@ -237,11 +272,13 @@ export function PhotographySection() {
                         </Button>
                       </DialogTrigger>
                       <DialogContent fullScreen className="p-0">
-                        <DialogTitle className="sr-only">Fullscreen Image</DialogTitle>
+                        <DialogTitle className="sr-only">
+                          Fullscreen Image
+                        </DialogTitle>
                         <div className="relative w-full h-full flex items-center justify-center bg-black">
                           <Image
-                            src={currentImage?.src || ''}
-                            alt={currentImage?.alt || ''}
+                            src={currentImage?.src || ""}
+                            alt={currentImage?.alt || ""}
                             fill
                             className="object-contain"
                             sizes="100vw"
