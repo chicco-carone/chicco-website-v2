@@ -5,9 +5,11 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/main/navbar";
 import { UserImage } from "@/components/user-image";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Home() {
   const [spin, setSpin] = useState(false);
+  const [showEggPopup, setShowEggPopup] = useState(false);
   const isMobile = useIsMobile();
   const lastKeyRef = useRef<string | null>(null);
   const lastPressTimeRef = useRef<number>(0);
@@ -83,8 +85,39 @@ export default function Home() {
     };
   }, [isMobile]);
 
+  // Popup logic for egg mode first load
+  useEffect(() => {
+    const hasSeenPopup = localStorage.getItem('eggPopupShown');
+    if (hasSeenPopup) return;
+
+    const checkEggMode = () => {
+      const isEggMode = document.documentElement.classList.contains('is-round-screen') ||
+                        document.documentElement.classList.contains('egg-on');
+      if (isEggMode) {
+        setShowEggPopup(true);
+        localStorage.setItem('eggPopupShown', 'true');
+      }
+    };
+
+    // Check immediately
+    checkEggMode();
+
+    // Also check after a short delay in case classes are set later
+    const timeout = setTimeout(checkEggMode, 1000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <>
+      <Dialog open={showEggPopup} onOpenChange={setShowEggPopup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>👀 Watch Mode Detected!</DialogTitle>
+          </DialogHeader>
+          <p>I see you're browsing this on a smartwatch! A true man of culture. Since I recognize that, I've adapted the navbar to be round thank me later!</p>
+        </DialogContent>
+      </Dialog>
       <Navbar />
       <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white relative overflow-hidden">
         {/* Immagine sopra la linea */}

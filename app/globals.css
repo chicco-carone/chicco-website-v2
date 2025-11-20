@@ -116,7 +116,7 @@
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --radius: 1.525rem;
-  
+
   --shadow-2xs: 0px 1px 3px 0px rgb(0 0 0 / 0.01);
   --shadow-xs: 0px 1px 3px 0px rgb(0 0 0 / 0.01);
   --shadow-sm: 0px 1px 3px 0px rgb(0 0 0 / 0.01), 0px 1px 2px -1px rgb(0 0 0 / 0.01);
@@ -125,7 +125,7 @@
   --shadow-lg: 0px 1px 3px 0px rgb(0 0 0 / 0.01), 0px 4px 6px -1px rgb(0 0 0 / 0.01);
   --shadow-xl: 0px 1px 3px 0px rgb(0 0 0 / 0.01), 0px 8px 10px -1px rgb(0 0 0 / 0.01);
   --shadow-2xl: 0px 1px 3px 0px rgb(0 0 0 / 0.03);
-  
+
 }
 
 .dark {
@@ -160,7 +160,7 @@
   --sidebar-accent-foreground: rgb(242 236 243);
   --sidebar-border: rgb(61 57 62 / 0.3);
   --sidebar-ring: rgb(14 138 175);
-  
+
   --shadow-2xs: 0px 1px 3px 0px rgb(0 0 0 / 0.01);
   --shadow-xs: 0px 1px 3px 0px rgb(0 0 0 / 0.01);
   --shadow-sm: 0px 1px 3px 0px rgb(0 0 0 / 0.01), 0px 1px 2px -1px rgb(0 0 0 / 0.01);
@@ -227,7 +227,76 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Easter egg: Curved navbar on round screens */
+.navbar-base {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: clip-path 0.5s ease-in-out, height 0.5s ease-in-out;
+}
+
+/* Apply curved shape when easter egg is activated OR on round screens */
+html.egg-on .navbar-base,
+html.is-round-screen .navbar-base {
+  height: 140px;
+  /* Curve the bottom of the navbar to match a round screen (concave arch) */
+  clip-path: polygon(0 0, 100% 0, 100% 100%,
+      95% 96%, 85% 90%, 75% 85%, 65% 82%, 50% 85%, 35% 82%, 25% 85%, 15% 90%, 5% 96%,
+      0 100%);
+  /* Fallback for browsers without clip-path support */
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+/* Override inner container to allow taller content */
+html.egg-on .navbar-base>div>div,
+html.is-round-screen .navbar-base>div>div {
+  height: 100%;
+  align-items: flex-start;
+  padding-top: 1rem;
+}
+
+/* Highlight effect along curved edge - REMOVED to prevent button interference */
+html.egg-on .navbar-base::after,
+html.is-round-screen .navbar-base::after {
+  content: none;
+}
+
+/* Rotate navigation items to follow the curve */
+html.egg-on .navbar-base ul,
+html.is-round-screen .navbar-base ul {
+  align-items: flex-start;
+  padding-top: 1rem;
+  gap: 0.5rem;
+}
+
+html.egg-on .navbar-base li,
+html.is-round-screen .navbar-base li {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.egg-on .navbar-base li:nth-child(1),
+html.is-round-screen .navbar-base li:nth-child(1) {
+  transform: translateY(45px) rotate(-25deg);
+}
+
+html.egg-on .navbar-base li:nth-child(2),
+html.is-round-screen .navbar-base li:nth-child(2) {
+  transform: translateY(15px) rotate(-8deg);
+}
+
+html.egg-on .navbar-base li:nth-child(3),
+html.is-round-screen .navbar-base li:nth-child(3) {
+  transform: translateY(15px) rotate(8deg);
+}
+
+html.egg-on .navbar-base li:nth-child(4),
+html.is-round-screen .navbar-base li:nth-child(4) {
+  transform: translateY(45px) rotate(25deg);
 }
