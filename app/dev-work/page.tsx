@@ -60,10 +60,11 @@ export default async function DevWork() {
 
 	// Choose which open source projects you've contributed to
 	const contributionRepos = [
-		"music-assistant/server",
-		"badaix/snapweb",
-		"badaix/snapcast",
-	];
+	"WiVRn/WiVRn",
+    "music-assistant/server",
+    "badaix/snapweb",
+    "badaix/snapcast",
+  ];
 
 	// Fetch profile data on server
 	let profile: Profile | null = null;

@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/main/navbar";
 import { Linktree } from "@/components/linktree";
-import { FaGithub, FaReddit, FaTelegram, FaSteam } from "react-icons/fa"; // Using react-icons
+import { FaGithub, FaReddit, FaTelegram, FaSteam, FaDiscord } from "react-icons/fa"; // Using react-icons
 
 export default function LinksPage() {
     const links = [
@@ -11,6 +11,7 @@ export default function LinksPage() {
         { name: "Telegram", href: "https://t.me/Chicco2008", icon: FaTelegram },
         { name: "Steam", href: "https://steamcommunity.com/id/Chicco8/", icon: FaSteam },
         { name: "Osu", href: "https://osu.ppy.sh/users/26161155", icon: "/osu.svg" },
+        { name: "chicco2008", href: "#", icon: FaDiscord },
     ];
 
     return (
